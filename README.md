@@ -3,6 +3,7 @@
 社内の人と人のやり取りを、一人ひとりのAIが代わりに担うコミュニケーションアプリのモックです。フロントエンドのみで、AIの応答とデータはすべて用意したダミーです。
 
 - 設計書: Jira NNJT-5
+- 公開ページ: https://ikko1250.github.io/teamb/
 
 ## 起動
 
@@ -28,7 +29,7 @@ npm run test:e2e
 npm run build
 ```
 
-`dist/` を GitHub Pages などの静的ホスティングに置いて公開します。パスを相対にしているので、リポジトリ名に合わせた設定は不要です。
+`main` にプッシュすると、GitHub Actions（`.github/workflows/deploy.yml`）がビルドして GitHub Pages に公開します。パスを相対にしているので、リポジトリ名に合わせた設定は不要です。
 
 ## デモのデータ
 
