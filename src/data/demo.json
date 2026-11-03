@@ -1,0 +1,417 @@
+{
+  "persons": [
+    {
+      "id": "takahashi",
+      "name": "高橋 葵",
+      "shortName": "高橋",
+      "department": "営業部"
+    },
+    {
+      "id": "nakamura",
+      "name": "中村 健太",
+      "shortName": "中村",
+      "department": "経理部"
+    }
+  ],
+  "docs": [
+    {
+      "id": "doc-invoice",
+      "title": "請求書の発行予定（2026年11月）",
+      "owner": "中村 健太",
+      "readers": "all",
+      "updatedAt": "2026/10/28",
+      "stale": false,
+      "lines": [
+        "11月の請求書の発行予定です。",
+        "A社：11月4日（水）",
+        "B社：11月5日（木）",
+        "C社：11月6日（金）",
+        "金額を変更する場合は、発行日の前日までに経理部へ連絡してください。"
+      ],
+      "highlight": 3
+    },
+    {
+      "id": "doc-travel",
+      "title": "旅費規程",
+      "owner": "中村 健太",
+      "readers": "all",
+      "updatedAt": "2024/04/01",
+      "stale": true,
+      "lines": [
+        "国内出張の旅費に関する規程です。",
+        "日当：1日 2,000円",
+        "宿泊費：1泊 10,000円まで",
+        "精算は、出張から2週間以内に行ってください。"
+      ],
+      "highlight": 1
+    },
+    {
+      "id": "doc-credit",
+      "title": "取引先の与信限度額一覧",
+      "owner": "中村 健太",
+      "readers": [
+        "nakamura"
+      ],
+      "updatedAt": "2026/10/15",
+      "stale": false,
+      "lines": [
+        "取引先ごとの与信限度額です。経理部以外への共有には注意してください。",
+        "A社：3,000万円",
+        "B社：1,500万円",
+        "C社：800万円"
+      ],
+      "highlight": 1
+    }
+  ],
+  "requests": [
+    {
+      "id": "invoice",
+      "from": "takahashi",
+      "to": "nakamura",
+      "kind": "answered",
+      "docId": "doc-invoice",
+      "prompt": "中村さんに、C社の請求書の発行日を確認して",
+      "question": "C社の請求書の発行日はいつですか",
+      "answer": "C社の請求書は、11月6日（金）に発行される予定です。"
+    },
+    {
+      "id": "travel",
+      "from": "takahashi",
+      "to": "nakamura",
+      "kind": "provisional",
+      "docId": "doc-travel",
+      "prompt": "中村さんに、出張の日当の金額を確認して",
+      "question": "出張の日当はいくらですか",
+      "answer": "出張の日当は、1日2,000円です。",
+      "staleNote": "根拠の旅費規程が2024年4月から更新されていないため、推定の回答です。",
+      "suggestedReply": "2026年4月から、1日2,500円に改定されています。",
+      "correctedAnswer": "出張の日当は、1日2,500円です（2026年4月改定）。",
+      "correctedLine": "日当：1日 2,500円（2026年4月改定）"
+    },
+    {
+      "id": "credit",
+      "from": "takahashi",
+      "to": "nakamura",
+      "kind": "needsApproval",
+      "docId": "doc-credit",
+      "prompt": "中村さんに、A社の与信限度額を確認して",
+      "question": "A社の与信限度額はいくらですか",
+      "answer": "A社の与信限度額は、3,000万円です。"
+    },
+    {
+      "id": "closing",
+      "from": "takahashi",
+      "to": "nakamura",
+      "kind": "noSource",
+      "prompt": "中村さんに、締め日が祝日のときの経費精算の扱いを確認して",
+      "question": "経費精算の締め日が祝日の場合、締め日はいつになりますか",
+      "suggestedReply": "祝日の場合は、その前の営業日が締め日になります。",
+      "newDocTitle": "経費精算の締め日（祝日の場合）"
+    }
+  ],
+  "history": [
+    {
+      "id": "h1",
+      "persona": "nakamura",
+      "from": "佐藤 美咲",
+      "question": "10月の売上の締め日",
+      "docTitle": "経理カレンダー（2026年度）",
+      "when": "今日 9:12"
+    },
+    {
+      "id": "h2",
+      "persona": "nakamura",
+      "from": "鈴木 拓也",
+      "question": "交通費の精算方法",
+      "docTitle": "経費精算の手順",
+      "when": "今日 8:47"
+    },
+    {
+      "id": "h3",
+      "persona": "nakamura",
+      "from": "田中 翔",
+      "question": "B社の請求書の送付先",
+      "docTitle": "取引先の請求先一覧",
+      "when": "昨日 17:20"
+    },
+    {
+      "id": "h4",
+      "persona": "takahashi",
+      "from": "田中 翔",
+      "question": "B社の追加発注の進み具合",
+      "docTitle": "B社 商談メモ",
+      "when": "今日 9:30"
+    }
+  ],
+  "items": [
+    {
+      "id": "a1",
+      "column": "action",
+      "source": "mail",
+      "title": "A社見積の承認（今日12時まで）",
+      "originalTitle": "Re: Re: 見積の件",
+      "sender": "佐藤 美咲",
+      "due": "今日 12:00",
+      "reason": "承認しないと、今日のA社への提出が止まります",
+      "excluded": false
+    },
+    {
+      "id": "a2",
+      "column": "action",
+      "source": "mail",
+      "title": "B社へ納期を回答（今日15時まで）",
+      "originalTitle": "納期のご確認",
+      "sender": "山本 誠（B社）",
+      "due": "今日 15:00",
+      "reason": "取引先からの期限付きの依頼です",
+      "excluded": false
+    },
+    {
+      "id": "a3",
+      "column": "action",
+      "source": "chat",
+      "title": "定例の議題を1件提出（今日17時まで）",
+      "originalTitle": "#営業部 @高橋 議題ある？",
+      "sender": "田中 翔",
+      "due": "今日 17:00",
+      "reason": "あなた宛てのメンションで、今日が期限です",
+      "excluded": false
+    },
+    {
+      "id": "a4",
+      "column": "action",
+      "source": "mail",
+      "title": "出張精算の差し戻しを修正（明日まで）",
+      "originalTitle": "【経理】精算差し戻しのお知らせ",
+      "sender": "小林 由美",
+      "due": "明日",
+      "reason": "明日を過ぎると、精算が来月に回ります",
+      "excluded": false
+    },
+    {
+      "id": "a5",
+      "column": "action",
+      "source": "chat",
+      "title": "C社訪問の日程候補を返信（明日まで）",
+      "originalTitle": "来週のC社訪問どうしますか",
+      "sender": "鈴木 拓也",
+      "due": "明日",
+      "reason": "返信がないと、先方への連絡が遅れます",
+      "excluded": false
+    },
+    {
+      "id": "a6",
+      "column": "action",
+      "source": "mail",
+      "title": "新人研修の講師依頼に回答（水曜まで）",
+      "originalTitle": "【人事】研修講師のお願い",
+      "sender": "伊藤 真理",
+      "due": "水曜",
+      "reason": "あなたを指名した依頼です",
+      "excluded": false
+    },
+    {
+      "id": "a7",
+      "column": "action",
+      "source": "chat",
+      "title": "共有サーバー移行の影響を回答（木曜まで）",
+      "originalTitle": "#お知らせ サーバー移行について",
+      "sender": "渡辺 陸",
+      "due": "木曜",
+      "reason": "営業部の回答がまだ届いていません",
+      "excluded": false
+    },
+    {
+      "id": "a8",
+      "column": "action",
+      "source": "chat",
+      "title": "来週の1on1の時間を確定",
+      "originalTitle": "1on1の時間変更",
+      "sender": "佐藤 美咲",
+      "reason": "上司からの調整で、早めの返信が望ましいです",
+      "excluded": false
+    },
+    {
+      "id": "a9",
+      "column": "action",
+      "source": "mail",
+      "title": "年末調整の書類を提出（来週金曜まで）",
+      "originalTitle": "【総務】年末調整のご案内",
+      "sender": "総務部",
+      "due": "来週金曜",
+      "reason": "必須の手続きですが、期限まで余裕があります",
+      "excluded": false
+    },
+    {
+      "id": "a10",
+      "column": "action",
+      "source": "chat",
+      "title": "部門懇親会の出欠を回答",
+      "originalTitle": "懇親会の出欠とります",
+      "sender": "田中 翔",
+      "reason": "回答が必要ですが、急ぎではありません",
+      "excluded": false
+    },
+    {
+      "id": "a11",
+      "column": "action",
+      "source": "mail",
+      "title": "社内システムのアンケートに回答",
+      "originalTitle": "アンケートご協力のお願い",
+      "sender": "渡辺 陸",
+      "reason": "回答の依頼ですが、優先度は低めです",
+      "excluded": false
+    },
+    {
+      "id": "ax1",
+      "column": "action",
+      "source": "mail",
+      "title": "C社の担当者が変更（CCで受信）",
+      "originalTitle": "FW: 担当変更のご連絡",
+      "sender": "加藤 恵",
+      "reason": "CCで受信しており、対応を求められていません",
+      "excluded": true
+    },
+    {
+      "id": "ax2",
+      "column": "action",
+      "source": "mail",
+      "title": "全社メールマガジン 11月号",
+      "originalTitle": "社内報 11月号",
+      "sender": "広報部",
+      "reason": "情報共有のみで、対応は不要です",
+      "excluded": true
+    },
+    {
+      "id": "ax3",
+      "column": "action",
+      "source": "chat",
+      "title": "雑談チャンネルの週末の話題",
+      "originalTitle": "#雑談",
+      "sender": "複数人",
+      "reason": "業務に関係しない会話です",
+      "excluded": true
+    },
+    {
+      "id": "t1",
+      "column": "task",
+      "source": "doc",
+      "title": "提案書v3の指摘に回答（今日まで）",
+      "originalTitle": "提案書v3 コメント3件",
+      "sender": "佐藤 美咲",
+      "due": "今日",
+      "reason": "明日の提案で使う資料で、未回答の指摘が3件あります",
+      "excluded": false
+    },
+    {
+      "id": "t2",
+      "column": "task",
+      "source": "ticket",
+      "title": "請求画面の表示崩れを受入確認（今日まで）",
+      "originalTitle": "SALES-214 請求画面の表示崩れ",
+      "sender": "渡辺 陸",
+      "due": "今日",
+      "reason": "あなたの確認待ちで、今日のリリースが止まっています",
+      "excluded": false
+    },
+    {
+      "id": "t3",
+      "column": "task",
+      "source": "doc",
+      "title": "A社打ち合わせの議事録を確定（明日まで）",
+      "originalTitle": "A社 定例議事録（ドラフト）",
+      "sender": "鈴木 拓也",
+      "due": "明日",
+      "reason": "明日、A社へ送る予定です",
+      "excluded": false
+    },
+    {
+      "id": "t4",
+      "column": "task",
+      "source": "ticket",
+      "title": "顧客リストの重複を整理（水曜まで）",
+      "originalTitle": "SALES-198 顧客データの重複",
+      "due": "水曜",
+      "reason": "担当はあなたで、期限が今週です",
+      "excluded": false
+    },
+    {
+      "id": "t5",
+      "column": "task",
+      "source": "doc",
+      "title": "来期の営業目標の案を更新（木曜まで）",
+      "originalTitle": "来期目標 たたき台",
+      "sender": "佐藤 美咲",
+      "due": "木曜",
+      "reason": "金曜の部会で使います",
+      "excluded": false
+    },
+    {
+      "id": "t6",
+      "column": "task",
+      "source": "ticket",
+      "title": "見積テンプレートの改訂を確認（金曜まで）",
+      "originalTitle": "SALES-220 見積テンプレート改訂",
+      "due": "金曜",
+      "reason": "レビュー担当に指定されています",
+      "excluded": false
+    },
+    {
+      "id": "t7",
+      "column": "task",
+      "source": "doc",
+      "title": "営業マニュアルの古い記述を修正",
+      "originalTitle": "営業マニュアル 改訂依頼",
+      "sender": "伊藤 真理",
+      "reason": "研修の前に直しておくと、手戻りを防げます",
+      "excluded": false
+    },
+    {
+      "id": "t8",
+      "column": "task",
+      "source": "ticket",
+      "title": "商談メモの入力漏れを補完",
+      "originalTitle": "SALES-187 商談メモ未入力",
+      "reason": "入力漏れが2件残っています",
+      "excluded": false
+    },
+    {
+      "id": "t9",
+      "column": "task",
+      "source": "doc",
+      "title": "競合比較表に新製品を追加",
+      "originalTitle": "競合比較表 2026",
+      "sender": "鈴木 拓也",
+      "reason": "急ぎではありませんが、担当はあなたです",
+      "excluded": false
+    },
+    {
+      "id": "t10",
+      "column": "task",
+      "source": "ticket",
+      "title": "CRMの通知設定を見直す",
+      "originalTitle": "SALES-176 通知設定の見直し",
+      "reason": "期限がなく、優先度は低めです",
+      "excluded": false
+    },
+    {
+      "id": "tx1",
+      "column": "task",
+      "source": "doc",
+      "title": "B社の過去提案の資料が更新",
+      "originalTitle": "B社 提案資料 更新通知",
+      "sender": "加藤 恵",
+      "reason": "更新の通知のみで、作業は発生しません",
+      "excluded": true
+    },
+    {
+      "id": "tx2",
+      "column": "task",
+      "source": "ticket",
+      "title": "開発チームのチケットが完了",
+      "originalTitle": "DEV-1042 完了通知",
+      "reason": "ウォッチ中のチケットで、あなたの作業はありません",
+      "excluded": true
+    }
+  ]
+}
