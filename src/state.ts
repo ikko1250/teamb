@@ -6,6 +6,11 @@ export const demo = demoJson as unknown as Demo;
 export const FULL_COUNT = 3;
 export const VISIBLE_COUNT = 8;
 
+/**
+ * waitingOwner: 回答者に確認している。回答案があるか（drafted）ないか（noSource）は、回答者の画面でだけ区別する。
+ * answeredByOwner: 回答者が答えた。回答案のまま答えた場合も、直して答えた場合も、回答者の回答として扱う。
+ * declined: 回答者が答えないと決めた。
+ */
 export type RequestStatus =
   | 'idle'
   | 'asking'
@@ -13,14 +18,15 @@ export type RequestStatus =
   | 'provisional'
   | 'confirmed'
   | 'corrected'
-  | 'waitingApproval'
-  | 'approved'
-  | 'declined'
-  | 'waitingAnswer'
-  | 'answeredByOwner';
+  | 'waitingOwner'
+  | 'answeredByOwner'
+  | 'declined';
 
 /** 回答者の判断を待っている状態 */
-export const PENDING_STATUSES: RequestStatus[] = ['provisional', 'waitingApproval', 'waitingAnswer'];
+export const PENDING_STATUSES: RequestStatus[] = ['provisional', 'waitingOwner'];
+
+/** 質問者のAIが、質問者の読めるドキュメントで解決した状態 */
+export const SOLVED_BY_DOC: RequestStatus[] = ['answered', 'provisional', 'confirmed', 'corrected'];
 
 export type RequestState = {
   status: RequestStatus;
@@ -57,9 +63,8 @@ export type Action =
   | { type: 'resolve'; requestId: string }
   | { type: 'confirm'; requestId: string }
   | { type: 'correct'; requestId: string; reply: string }
-  | { type: 'approve'; requestId: string }
-  | { type: 'decline'; requestId: string }
   | { type: 'reply'; requestId: string; reply: string }
+  | { type: 'decline'; requestId: string }
   | { type: 'widen'; docId: string }
   | { type: 'showDashboard' }
   | { type: 'openDoc'; docId: string }
@@ -153,8 +158,8 @@ function notifyAsker(state: State, requestId: string): State {
 const RESOLVED_STATUS: Record<AiRequest['kind'], RequestStatus> = {
   answered: 'answered',
   provisional: 'provisional',
-  needsApproval: 'waitingApproval',
-  noSource: 'waitingAnswer',
+  drafted: 'waitingOwner',
+  noSource: 'waitingOwner',
 };
 
 export function reducer(state: State, action: Action): State {
@@ -202,17 +207,16 @@ export function reducer(state: State, action: Action): State {
       );
     }
 
-    case 'approve':
     case 'decline': {
-      if (state.requests[action.requestId].status !== 'waitingApproval') return state;
-      const status = action.type === 'approve' ? 'approved' : 'declined';
-      return notifyAsker(setRequest(state, action.requestId, { status }), action.requestId);
+      if (state.requests[action.requestId].status !== 'waitingOwner') return state;
+      return notifyAsker(setRequest(state, action.requestId, { status: 'declined' }), action.requestId);
     }
 
     case 'reply': {
       const request = getRequest(action.requestId);
-      if (state.requests[request.id].status !== 'waitingAnswer') return state;
+      if (state.requests[request.id].status !== 'waitingOwner') return state;
       // 回答をドキュメントにする。公開範囲は、最初は質問者と回答者だけにする。
+      // 質問者に見せる根拠はこのドキュメントで、回答者だけが読める元のドキュメントやメモは見せない。
       const doc: Doc = {
         id: `doc-from-${request.id}`,
         title: request.newDocTitle ?? request.question,

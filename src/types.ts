@@ -9,6 +9,8 @@ export type Person = {
 
 export type Doc = {
   id: string;
+  /** memo: 本人の手元のメモ。共有を前提に書いていないもの */
+  kind?: 'memo';
   title: string;
   owner: string;
   /** 閲覧できる人。権限はAIではなく、ここで機械的に判定する。 */
@@ -22,33 +24,40 @@ export type Doc = {
 };
 
 /**
- * answered: 質問者も読めるドキュメントから自動で回答する
- * provisional: ドキュメントが古いので、推定で回答して本人に確認する
- * needsApproval: 回答者しか読めないドキュメントなので、本人に開示の可否を聞く
- * noSource: 根拠がないので、本人に質問する
+ * answered: 質問者が読めるドキュメントから、質問者のAIが答える
+ * provisional: 質問者が読めるドキュメントが古いので、質問者のAIが推定で答え、担当者に確認する
+ * drafted: 回答者だけが読めるドキュメントやメモにあるので、回答者のAIが回答案を用意して回答者に聞く
+ * noSource: どこにも根拠がないので、回答者に聞く
+ *
+ * 質問者の画面では、drafted と noSource を区別しない（どちらも「確認します」）。
  */
-export type RequestKind = 'answered' | 'provisional' | 'needsApproval' | 'noSource';
+export type RequestKind = 'answered' | 'provisional' | 'drafted' | 'noSource';
 
 export type AiRequest = {
   id: string;
   from: PersonId;
   to: PersonId;
   kind: RequestKind;
+  /** 根拠。answered と provisional は質問者が読めるもの、drafted は回答者だけが読めるもの */
   docId?: string;
   /** 依頼文（質問者がAIに頼む文） */
   prompt: string;
-  /** 回答者に見せる質問 */
+  /** 回答者に送る質問。送った文は質問者の画面にもそのまま見せる */
   question: string;
+  /** answered と provisional は質問者のAIの回答、drafted は回答者のAIが用意した回答案 */
   answer?: string;
   staleNote?: string;
-  /** 回答者の入力欄に最初から入れておく文 */
-  suggestedReply?: string;
+  /** 返事の目安 */
+  replyBy?: string;
+  /** デモ用の例文。回答者が入力欄に入れられる */
+  exampleReply?: string;
   correctedAnswer?: string;
   correctedLine?: string;
+  /** 回答者の回答から作るドキュメントの題名 */
   newDocTitle?: string;
 };
 
-/** AIが代わりに回答した過去の記録（デモ用の初期データ） */
+/** 回答者のドキュメントで解決した過去の質問（デモ用の初期データ） */
 export type HistoryEntry = {
   id: string;
   persona: PersonId;

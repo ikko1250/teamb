@@ -395,6 +395,43 @@ a {
   border-radius: 4px;
 }
 
+.bubble__label {
+  margin-bottom: -6px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.quote--draft {
+  font-weight: 700;
+  border-left-color: var(--accent);
+}
+
+.source {
+  display: grid;
+  gap: 6px;
+}
+
+.source__meta {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.source mark {
+  padding: 1px 4px;
+  background: #fde9a6;
+  border-radius: 3px;
+}
+
+.reply-field {
+  display: grid;
+  gap: 6px;
+  justify-items: start;
+}
+
+.reply-field .field {
+  width: 100%;
+}
+
 .demo-hint {
   padding: 6px 10px;
   color: var(--info);
@@ -703,7 +740,7 @@ a {
   font-size: 13px;
 }
 
-/* 代理対応の記録 */
+/* 確認の記録 */
 
 .page {
   max-width: 980px;
@@ -756,6 +793,12 @@ a {
 .record-section > h2 {
   margin-bottom: 10px;
   font-size: 19px;
+}
+
+.record-section__note {
+  margin: -4px 0 10px;
+  color: var(--text-muted);
+  font-size: 14px;
 }
 
 .empty {

@@ -6,6 +6,7 @@ import {
   demo,
   getPerson,
   getRequest,
+  SOLVED_BY_DOC,
   selectPending,
   type Action,
   type Message,
@@ -55,36 +56,36 @@ function Greeting({ state }: { state: State }) {
       <div className="bubble">
         <p>おはようございます、{person.shortName}さん。</p>
         <p>
-          社内の人への確認は、私が相手のAIに問い合わせます。根拠になるドキュメントがあれば相手を煩わせずに答え、相手の判断が必要なときだけ本人に聞きます。
+          社内の人への確認は、まず、あなたが読めるドキュメントから私が答えます。ドキュメントで答えられないときだけ、相手に確認します。
         </p>
       </div>
     );
   }
 
-  const answeredToday =
+  const solvedToday =
     demo.history.filter((entry) => entry.persona === state.persona && entry.when.startsWith('今日')).length +
     demo.requests.filter(
-      (request) =>
-        request.to === state.persona &&
-        ['answered', 'provisional', 'confirmed', 'corrected'].includes(state.requests[request.id].status),
+      (request) => request.to === state.persona && SOLVED_BY_DOC.includes(state.requests[request.id].status),
     ).length;
-  const pending = selectPending(state, state.persona).length;
+  const pending = selectPending(state, state.persona);
+  const drafted = pending.filter((request) => request.kind === 'drafted').length;
 
   return (
     <div className="bubble">
       <p>おはようございます、{person.shortName}さん。</p>
       <p className="summary">
-        今日、あなたの代わりに<strong>{answeredToday}件</strong>の質問に回答しました。
-        {pending > 0 ? (
+        今日、あなたのドキュメントで<strong>{solvedToday}件</strong>の質問が解決しました。
+        {pending.length > 0 ? (
           <>
-            あなたの判断が必要なものが<strong>{pending}件</strong>あります。
+            あなたへの確認が<strong>{pending.length}件</strong>あります。
+            {drafted > 0 && <>うち{drafted}件は、あなたのドキュメントやメモから回答案を用意しました。</>}
           </>
         ) : (
-          'あなたの判断が必要なものはありません。'
+          'あなたへの確認はありません。'
         )}
       </p>
       <a className="button button--primary" href={paths.record}>
-        代理対応の記録を開く
+        確認の記録を開く
       </a>
     </div>
   );
@@ -161,6 +162,10 @@ function StatusPill({ label, tone }: { label: string; tone?: 'warn' | 'done' }) 
   return <span className={tone ? `pill pill--${tone}` : 'pill'}>{label}</span>;
 }
 
+function ReplyBy({ request }: { request: AiRequest }) {
+  return <>急ぎではないため、{nameOf(request.to)}の手が空いたときに聞きます（返事の目安：{request.replyBy}）。</>;
+}
+
 function ResultView({ request, status, state, act }: RequestViewProps & { status: RequestStatus }) {
   const doc = useDoc(state, request.docId);
   const to = nameOf(request.to);
@@ -169,7 +174,7 @@ function ResultView({ request, status, state, act }: RequestViewProps & { status
   if (status === 'asking') {
     return (
       <p className="bubble bubble--typing">
-        {to}のAIに問い合わせています
+        ドキュメントを探しています
         <span className="dots" aria-hidden="true" />
       </p>
     );
@@ -178,10 +183,10 @@ function ResultView({ request, status, state, act }: RequestViewProps & { status
   if (request.kind === 'answered' && doc) {
     return (
       <div className="bubble">
-        <p className="bubble__head">{to}のAIが回答しました</p>
+        <p className="bubble__head">ドキュメントから回答しました</p>
         <p className="bubble__answer">{request.answer}</p>
         <SourceChip doc={doc} status="確認済み" onOpen={openDoc} />
-        <p className="bubble__note">根拠になるドキュメントがあったため、{to}への確認は不要でした。</p>
+        <p className="bubble__note">あなたが読めるドキュメントにあったので、{to}への確認は不要でした。</p>
       </div>
     );
   }
@@ -191,52 +196,46 @@ function ResultView({ request, status, state, act }: RequestViewProps & { status
       status === 'confirmed' ? '確認済み' : status === 'corrected' ? '訂正済み' : '未確認';
     return (
       <div className="bubble">
-        <p className="bubble__head">{to}のAIが推定で回答しました</p>
+        <p className="bubble__head">ドキュメントをもとに推定で回答しました</p>
         <p className="bubble__answer">{status === 'corrected' ? <s>{request.answer}</s> : request.answer}</p>
         <SourceChip doc={doc} status={chipStatus} onOpen={openDoc} />
         <p className="bubble__note">
           {request.staleNote}
-          {status === 'provisional' &&
-            `急ぎではないため、${to}の手が空いたときに確認します。確認が済むまでは、取引先への回答など、取り消せないことの根拠にしないでください。`}
+          {status === 'provisional' && (
+            <>
+              ドキュメントが古いため、{to}に確認します。
+              <ReplyBy request={request} />
+              確認が済むまでは、取引先への回答など、取り消せないことの根拠にしないでください。
+            </>
+          )}
         </p>
         {status === 'provisional' && <DemoHint to={request.to} />}
       </div>
     );
   }
 
-  if (request.kind === 'needsApproval' && doc) {
-    const pill =
-      status === 'approved' ? (
-        <StatusPill label="承認済み" tone="done" />
-      ) : status === 'declined' ? (
-        <StatusPill label="見送り" />
-      ) : (
-        <StatusPill label="確認待ち" tone="warn" />
-      );
-    return (
-      <div className="bubble">
-        <p className="bubble__head">
-          {to}に開示の確認をしています {pill}
-        </p>
-        <p>
-          この情報は、{to}しか読めないドキュメント「{doc.title}」にあります。AIの判断では開示せず、見せてよいかを
-          {to}に確認しています。
-        </p>
-        {status === 'waitingApproval' && <DemoHint to={request.to} />}
-      </div>
+  // 回答者だけが読めるものにある場合（drafted）も、どこにもない場合（noSource）も、同じ表示にする。
+  // 回答者だけが読めるドキュメントがあること自体が情報になるため。
+  const pill =
+    status === 'answeredByOwner' ? (
+      <StatusPill label="回答済み" tone="done" />
+    ) : status === 'declined' ? (
+      <StatusPill label="見送り" />
+    ) : (
+      <StatusPill label="回答待ち" tone="warn" />
     );
-  }
-
   return (
     <div className="bubble">
       <p className="bubble__head">
-        {to}に質問しました{' '}
-        {status === 'waitingAnswer' ? <StatusPill label="回答待ち" tone="warn" /> : <StatusPill label="回答済み" tone="done" />}
+        {to}に確認します {pill}
       </p>
       <p>
-        根拠になるドキュメントが見つかりませんでした。推測では答えず、{to}に質問しました。急ぎではないため、手が空いたときに答えてもらいます。
+        あなたが読めるドキュメントでは答えられなかったため、{to}に確認を依頼しました。
+        {status === 'waitingOwner' && <ReplyBy request={request} />}
       </p>
-      {status === 'waitingAnswer' && <DemoHint to={request.to} />}
+      <p className="bubble__label">{to}に送った質問</p>
+      <blockquote className="quote">{request.question}</blockquote>
+      {status === 'waitingOwner' && <DemoHint to={request.to} />}
     </div>
   );
 }
@@ -267,29 +266,22 @@ function FollowupView({ request, state, act }: RequestViewProps) {
           <p className="bubble__note">根拠のドキュメントも更新したので、次からは正しい内容で答えます。</p>
         </div>
       );
-    case 'approved':
-      return (
-        <div className="bubble">
-          <p className="bubble__head">{to}が開示を承認しました</p>
-          <p className="bubble__answer">{request.answer}</p>
-          {doc && <SourceChip doc={doc} status="開示を承認" onOpen={openDoc} />}
-          <p className="bubble__note">開示されたのはこの回答だけで、ドキュメントの閲覧権限は変わりません。</p>
-        </div>
-      );
-    case 'declined':
-      return (
-        <div className="bubble">
-          <p className="bubble__head">{to}が開示を見送りました</p>
-          <p>必要な場合は、{to}に直接相談してください。</p>
-        </div>
-      );
     case 'answeredByOwner':
       return (
         <div className="bubble">
           <p className="bubble__head">{to}が回答しました</p>
           <p className="bubble__answer">{ownerReply}</p>
-          {createdDoc && <SourceChip doc={createdDoc} status="回答者が作成" onOpen={openDoc} />}
-          <p className="bubble__note">回答をドキュメントにしたので、次からは{to}のAIが答えます。</p>
+          {createdDoc && <SourceChip doc={createdDoc} status="担当者が回答" onOpen={openDoc} />}
+          <p className="bubble__note">
+            {to}の回答をドキュメントにしました。次に同じことを聞いたときは、{to}への確認は要りません。
+          </p>
+        </div>
+      );
+    case 'declined':
+      return (
+        <div className="bubble">
+          <p className="bubble__head">{to}が回答を見送りました</p>
+          <p>必要なら、{to}に直接相談してください。</p>
         </div>
       );
     default:

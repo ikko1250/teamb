@@ -1,7 +1,7 @@
 import { readersLabel } from '../state';
 import type { Doc } from '../types';
 
-export type SourceStatus = '確認済み' | '未確認' | '訂正済み' | '開示を承認' | '回答者が作成';
+export type SourceStatus = '確認済み' | '未確認' | '訂正済み' | '担当者が回答';
 
 type Props = { doc: Doc; status: SourceStatus; onOpen: (docId: string) => void };
 

@@ -20,9 +20,9 @@ export function Header({ persona, route, pendingCount, onChangePersona }: Props)
           AIとの対話
         </a>
         <a href={paths.record} aria-current={route === 'record' ? 'page' : undefined}>
-          代理対応の記録
+          確認の記録
           {pendingCount > 0 && (
-            <span className="badge" aria-label={`判断待ち${pendingCount}件`}>
+            <span className="badge" aria-label={`あなたへの確認${pendingCount}件`}>
               {pendingCount}
             </span>
           )}

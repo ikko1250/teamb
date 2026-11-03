@@ -5,7 +5,7 @@ import { RecordPage } from './pages/RecordPage';
 import { useRoute } from './route';
 import { createInitialState, reducer, selectPending, type Action } from './state';
 
-/** 相手のAIが答えるまでの待ち時間（デモ用） */
+/** AIがドキュメントを探す時間（デモ用） */
 const ANSWER_DELAY_MS = 1200;
 
 export function App() {
@@ -14,7 +14,7 @@ export function App() {
   const mainRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    document.title = `${route === 'chat' ? 'AIとの対話' : '代理対応の記録'} | teamb`;
+    document.title = `${route === 'chat' ? 'AIとの対話' : '確認の記録'} | teamb`;
     mainRef.current?.focus({ preventScroll: true });
   }, [route, state.persona]);
 

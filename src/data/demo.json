@@ -61,6 +61,24 @@
         "C社：800万円"
       ],
       "highlight": 1
+    },
+    {
+      "id": "memo-split",
+      "kind": "memo",
+      "title": "B社 請求の分割（電話メモ）",
+      "owner": "中村 健太",
+      "readers": [
+        "nakamura"
+      ],
+      "updatedAt": "2026/10/20",
+      "stale": false,
+      "lines": [
+        "10/20 B社の経理の方と電話で確認。",
+        "請求書の分割は、2回までなら先方も対応できる。",
+        "分割するなら、発行日の1週間前までに営業から連絡をもらうこと。",
+        "（B社の件だけ。ほかの取引先は未確認）"
+      ],
+      "highlight": 1
     }
   ],
   "requests": [
@@ -84,7 +102,8 @@
       "question": "出張の日当はいくらですか",
       "answer": "出張の日当は、1日2,000円です。",
       "staleNote": "根拠の旅費規程が2024年4月から更新されていないため、推定の回答です。",
-      "suggestedReply": "2026年4月から、1日2,500円に改定されています。",
+      "replyBy": "今日中",
+      "exampleReply": "2026年4月から、1日2,500円に改定されています。",
       "correctedAnswer": "出張の日当は、1日2,500円です（2026年4月改定）。",
       "correctedLine": "日当：1日 2,500円（2026年4月改定）"
     },
@@ -92,11 +111,25 @@
       "id": "credit",
       "from": "takahashi",
       "to": "nakamura",
-      "kind": "needsApproval",
+      "kind": "drafted",
       "docId": "doc-credit",
       "prompt": "中村さんに、A社の与信限度額を確認して",
       "question": "A社の与信限度額はいくらですか",
-      "answer": "A社の与信限度額は、3,000万円です。"
+      "answer": "A社の与信限度額は、3,000万円です。",
+      "replyBy": "今日中",
+      "newDocTitle": "A社の与信限度額"
+    },
+    {
+      "id": "split",
+      "from": "takahashi",
+      "to": "nakamura",
+      "kind": "drafted",
+      "docId": "memo-split",
+      "prompt": "中村さんに、B社の請求書を2回に分けられるか確認して",
+      "question": "B社の請求書を2回に分けて発行できますか",
+      "answer": "2回までなら分けて発行できます。分ける場合は、発行日の1週間前までに連絡してください。",
+      "replyBy": "今日中",
+      "newDocTitle": "B社の請求書の分割"
     },
     {
       "id": "closing",
@@ -105,7 +138,8 @@
       "kind": "noSource",
       "prompt": "中村さんに、締め日が祝日のときの経費精算の扱いを確認して",
       "question": "経費精算の締め日が祝日の場合、締め日はいつになりますか",
-      "suggestedReply": "祝日の場合は、その前の営業日が締め日になります。",
+      "replyBy": "今日中",
+      "exampleReply": "祝日の場合は、その前の営業日が締め日になります。",
       "newDocTitle": "経費精算の締め日（祝日の場合）"
     }
   ],

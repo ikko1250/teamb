@@ -6,10 +6,7 @@ export function DocView({ doc, persona }: { doc: Doc; persona: PersonId }) {
     return (
       <div className="doc">
         <h2 className="panel__title">{doc.title}</h2>
-        <p className="doc__locked">
-          {getPerson(persona).shortName}さんには、このドキュメントの閲覧権限がありません。
-          回答は、担当者が開示を承認した部分だけが届いています。
-        </p>
+        <p className="doc__locked">{getPerson(persona).shortName}さんには、このドキュメントの閲覧権限がありません。</p>
         <p className="meta">
           担当 {doc.owner}・閲覧 {readersLabel(doc)}
         </p>
@@ -25,6 +22,7 @@ export function DocView({ doc, persona }: { doc: Doc; persona: PersonId }) {
           更新 {doc.updatedAt}
           {doc.stale && '（長く更新されていません）'}
         </span>
+        {doc.kind === 'memo' && <span>メモ</span>}
         <span>担当 {doc.owner}</span>
         <span>閲覧 {readersLabel(doc)}</span>
       </p>
